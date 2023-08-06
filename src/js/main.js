@@ -4,7 +4,7 @@
   chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
       id: 'context-ri',
-      title: "But really open image in new tab",
+      title: "But really fullscreen the video",
       contexts: ['all']
     });
   });

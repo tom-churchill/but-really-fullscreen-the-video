@@ -1,10 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "But really open image in new tab",
-  "description": "But really open image in new tab",
-  "version": "0.2",
-  "permissions": ["contextMenus", "tabs"],
+  "name": "But really fullscreen the video",
+  "description": "But really fullscreen the video",
+  "version": "0.1",
+  "permissions": ["contextMenus", "tabs", "storage"],
   "icons": {"128": "icons/icon.png"},
+  "options_ui": {
+    "page": "options/index.html",
+    "open_in_tab": true
+  },
   "background": {
     "service_worker": "js/main.js"
   },

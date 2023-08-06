@@ -23,34 +23,6 @@
     position = {x: e.clientX, y: e.clientY};
   });
 
-  const openUrl = (url) => chrome.runtime.sendMessage({action: 'openNewTab', url: url})
-
-  const getImgUrl = (tag, element) => {
-    if (tag === "img") return element.src;
-  }
-
-  const getBackgroundImageUrls = (element) => {
-    const backgroundImage = window.getComputedStyle(element).backgroundImage;
-
-    if (backgroundImage && backgroundImage !== "none") {
-      const urlRegex = /url\(['"]?(.*?)['"]?\)/g;
-      const matches = backgroundImage.match(urlRegex) || [];
-
-      return matches.map(match => match.match(/url\(['"]?(.*?)['"]?\)/)[1]);
-    }
-
-    return [];
-  }
-
-  const getSvgUrl = (tag, element) => {
-    if (tag === "svg") {
-      const asText = new XMLSerializer().serializeToString(element);
-      const blob = new Blob([asText], {type: "image/svg+xml"});
-
-      return URL.createObjectURL(blob);
-    }
-  }
-
   const getElementsUnderPoint = (x, y) => {
     const allElements = Array.from(document.getElementsByTagName('*'));
 
@@ -61,30 +33,31 @@
     })
   }
 
-  const getImagesUnderPoint = (x, y) => {
-    const urls = new Set();
+  const getVideoUnderPoint = (x, y) => {
     const elements = getElementsUnderPoint(x, y);
 
-    elements.forEach(element => {
-      const tag = element.tagName.toLowerCase();
-
-      const urlImg = getImgUrl(tag, element);
-      const urlsBackgroundImage = getBackgroundImageUrls(element);
-      const urlSvg = getSvgUrl(tag, element);
-
-      if (urlImg) urls.add(urlImg);
-      if (urlSvg) urls.add(urlSvg);
-      urlsBackgroundImage.forEach(url => urls.add(url));
-    });
-
-    return urls;
+    return elements.find(e => e.tagName.toLowerCase() === "video");
   }
 
   chrome.runtime.onMessage.addListener((request) => {
     if (request !== 'show') return;
 
-    const urls = getImagesUnderPoint(position.x, position.y);
+    const video = getVideoUnderPoint(position.x, position.y);
 
-    urls.forEach(url => openUrl(url));
+    if (video) {
+      video.requestFullscreen();
+
+      chrome.storage.sync.get(['disableUnmute'], (result) => {
+        if(!result.disableUnmute) video.muted = false;
+      });
+
+      chrome.storage.sync.get(['disableSkip'], (result) => {
+        if(!result.disableSkip) video.currentTime = 0;
+      });
+
+      chrome.storage.sync.get(['disablePlay'], (result) => {
+        if(!result.disablePlay) video.play();
+      });
+    }
   });
 })();
