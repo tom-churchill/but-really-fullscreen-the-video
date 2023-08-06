@@ -1,6 +1,6 @@
 # But really fullscreen the video
 
-// image todo
+![image](https://github.com/tom-churchill/but-really-fullscreen-the-video/assets/5560857/180302c1-07f1-48c7-ba5c-7415f1f66f0b)
 
 Fullscreen videos even if they are covered up by hidden elements.
 
